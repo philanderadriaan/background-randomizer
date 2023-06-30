@@ -3,9 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -92,16 +90,8 @@ public class Main
 
   private static File getDirectory(String key)
   {
-    List<File> directoryList = new ArrayList<File>();
-    for (String directoryName : ((String) PROPERTIES.get(key)).split(","))
-    {
-      File directory = new File(directoryName);
-      if (directory.isDirectory())
-      {
-        directoryList.add(directory);
-      }
-    }
-    return directoryList.get(new Random().nextInt(directoryList.size()));
+    String[] directoryNames = PROPERTIES.getProperty(key).split(",");
+    return new File(directoryNames[new Random().nextInt(directoryNames.length)]);
   }
 
   private static void log(String... logs)
