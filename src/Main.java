@@ -31,12 +31,9 @@ public class Main
 
       File sourceDirectory = getDirectory("source.directory");
       File[] sourceSubDirectories = sourceDirectory.listFiles();
-      File sourceSubDirectory =
-          sourceSubDirectories[new Random().nextInt(sourceSubDirectories.length)];
-      File newSourceSubDirectory =
-          new File(sourceDirectory.getAbsolutePath() + "\\" + System.currentTimeMillis());
-      log("Rename", sourceSubDirectory.getAbsolutePath(),
-          newSourceSubDirectory.getAbsolutePath());
+      File sourceSubDirectory = sourceSubDirectories[new Random().nextInt(sourceSubDirectories.length)];
+      File newSourceSubDirectory = new File(sourceDirectory.getAbsolutePath() + "\\" + System.currentTimeMillis());
+      log("Rename", sourceSubDirectory.getAbsolutePath(), newSourceSubDirectory.getAbsolutePath());
       sourceSubDirectory.renameTo(newSourceSubDirectory);
       sourceSubDirectory = newSourceSubDirectory;
 
@@ -46,14 +43,11 @@ public class Main
         if (sourceGroup.isFile())
         {
           log("Copy", sourceGroup.getAbsolutePath(), destinationDirectory.getAbsolutePath());
-          Files.copy(sourceGroup.toPath(), Paths
-              .get(destinationDirectory.getAbsolutePath() + "\\" + sourceGroup.getName()));
+          Files.copy(sourceGroup.toPath(), Paths.get(destinationDirectory.getAbsolutePath() + "\\" + sourceGroup.getName()));
         }
         else if (sourceGroup.isDirectory())
         {
-          File newSourceGroup =
-              new File(sourceSubDirectory.getAbsolutePath() + "\\" +
-                       (char) (new Random().nextInt(26) + 'A') + System.currentTimeMillis());
+          File newSourceGroup = new File(sourceSubDirectory.getAbsolutePath() + "\\" + (char) (new Random().nextInt('Z' - 'A') + 'A') + System.currentTimeMillis());
           log("Rename", sourceGroup.getAbsolutePath(), newSourceGroup.getAbsolutePath());
           sourceGroup.renameTo(newSourceGroup);
           sourceGroup = newSourceGroup;
@@ -67,9 +61,7 @@ public class Main
     }
     catch (Exception exception)
     {
-      JOptionPane.showMessageDialog(null, exception.getMessage(),
-                                    exception.getClass().toString(),
-                                    JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, exception.getMessage(), exception.getClass().toString(), JOptionPane.ERROR_MESSAGE);
       throw exception;
     }
   }
@@ -77,13 +69,11 @@ public class Main
   private static void renameCopy(File sourceFile, File destinationDirectory) throws IOException
   {
     String sourceFileName = sourceFile.getName();
-    File newSourceFile = new File(sourceFile.getParent() + "\\" + System.currentTimeMillis() +
-                                  sourceFileName.substring(sourceFileName.lastIndexOf('.')));
+    File newSourceFile = new File(sourceFile.getParent() + "\\" + System.currentTimeMillis() + sourceFileName.substring(sourceFileName.lastIndexOf('.')));
     log("Rename", sourceFile.getAbsolutePath(), newSourceFile.getAbsolutePath());
     sourceFile.renameTo(newSourceFile);
     sourceFile = newSourceFile;
-    String destinationFileName =
-        destinationDirectory.getAbsolutePath() + "\\" + sourceFile.getName();
+    String destinationFileName = destinationDirectory.getAbsolutePath() + "\\" + sourceFile.getName();
     log("Copy", sourceFile.getAbsolutePath(), destinationFileName);
     Files.copy(sourceFile.toPath(), Paths.get(destinationFileName));
   }
