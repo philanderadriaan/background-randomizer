@@ -3,7 +3,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -29,34 +32,19 @@ public class Main
         destinationFile.delete();
       }
 
-      File sourceDirectory = getDirectory("source.directory");
-      File[] sourceSubDirectories = sourceDirectory.listFiles();
-      File sourceSubDirectory = sourceSubDirectories[new Random().nextInt(sourceSubDirectories.length)];
-      File newSourceSubDirectory = new File(sourceDirectory.getAbsolutePath() + "\\" + System.currentTimeMillis());
-      log("Rename", sourceSubDirectory.getAbsolutePath(), newSourceSubDirectory.getAbsolutePath());
-      sourceSubDirectory.renameTo(newSourceSubDirectory);
-      sourceSubDirectory = newSourceSubDirectory;
+      File[] sourceSubDirectories = getDirectory("source.directory").listFiles();
+      List<File> sourceFileList = Arrays.asList(rename(sourceSubDirectories[new Random().nextInt(sourceSubDirectories.length)]).listFiles());
+      Collections.shuffle(sourceFileList);
 
-      for (File sourceGroup : sourceSubDirectory.listFiles())
+      for (File sourceFile : sourceFileList)
       {
+        if (sourceFile.isDirectory())
+        {
+          File[] sourceFiles = sourceFile.listFiles();
+          sourceFile = sourceFiles[new Random().nextInt(sourceFiles.length)];
+        }
+        renameCopy(sourceFile, destinationDirectory);
         Thread.sleep(1);
-        if (sourceGroup.isFile())
-        {
-          log("Copy", sourceGroup.getAbsolutePath(), destinationDirectory.getAbsolutePath());
-          Files.copy(sourceGroup.toPath(), Paths.get(destinationDirectory.getAbsolutePath() + "\\" + sourceGroup.getName()));
-        }
-        else if (sourceGroup.isDirectory())
-        {
-          File newSourceGroup = new File(sourceSubDirectory.getAbsolutePath() + "\\" + (char) (new Random().nextInt('Z' - 'A') + 'A') + System.currentTimeMillis());
-          log("Rename", sourceGroup.getAbsolutePath(), newSourceGroup.getAbsolutePath());
-          sourceGroup.renameTo(newSourceGroup);
-          sourceGroup = newSourceGroup;
-
-          File[] sourceFiles = sourceGroup.listFiles();
-          File sourceFile = sourceFiles[new Random().nextInt(sourceFiles.length)];
-          renameCopy(sourceFile, destinationDirectory);
-        }
-
       }
     }
     catch (Exception exception)
@@ -66,13 +54,18 @@ public class Main
     }
   }
 
+  private static File rename(File file)
+  {
+    String oldFileName = file.getName();
+    File newFile = new File(file.getParent() + '\\' + System.currentTimeMillis() + (file.isFile() ? oldFileName.substring(oldFileName.lastIndexOf('.')) : ""));
+    log("Rename", file.getAbsolutePath(), newFile.getAbsolutePath());
+    file.renameTo(newFile);
+    return newFile;
+  }
+
   private static void renameCopy(File sourceFile, File destinationDirectory) throws IOException
   {
-    String sourceFileName = sourceFile.getName();
-    File newSourceFile = new File(sourceFile.getParent() + "\\" + System.currentTimeMillis() + sourceFileName.substring(sourceFileName.lastIndexOf('.')));
-    log("Rename", sourceFile.getAbsolutePath(), newSourceFile.getAbsolutePath());
-    sourceFile.renameTo(newSourceFile);
-    sourceFile = newSourceFile;
+    sourceFile = rename(sourceFile);
     String destinationFileName = destinationDirectory.getAbsolutePath() + "\\" + sourceFile.getName();
     log("Copy", sourceFile.getAbsolutePath(), destinationFileName);
     Files.copy(sourceFile.toPath(), Paths.get(destinationFileName));
