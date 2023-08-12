@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -33,15 +34,16 @@ public class Main
       }
 
       File[] sourceSubDirectories = getDirectory("source.directory").listFiles();
-      List<File> sourceFileList = Arrays.asList(rename(sourceSubDirectories[new Random().nextInt(sourceSubDirectories.length)]).listFiles());
+      List<File> sourceFileList = Arrays.asList(rename(random(sourceSubDirectories)).listFiles());
       Collections.shuffle(sourceFileList);
 
       for (File sourceFile : sourceFileList)
       {
         if (sourceFile.isDirectory())
         {
+          sourceFile = rename(sourceFile);
           File[] sourceFiles = sourceFile.listFiles();
-          sourceFile = sourceFiles[new Random().nextInt(sourceFiles.length)];
+          sourceFile = random(sourceFiles);
         }
         renameCopy(sourceFile, destinationDirectory);
         Thread.sleep(1);
@@ -52,6 +54,31 @@ public class Main
       JOptionPane.showMessageDialog(null, exception.getMessage(), exception.getClass().toString(), JOptionPane.ERROR_MESSAGE);
       throw exception;
     }
+  }
+
+  private static File random(File[] files)
+  {
+    List<File> fileList = new ArrayList<File>();
+    for (File file : files)
+    {
+      String fileName = file.getName();
+      fileName = file.isFile() ? fileName.substring(0, fileName.indexOf('.')) : fileName;
+      try
+      {
+        Long.parseLong(fileName);
+      }
+      catch (NumberFormatException e)
+      {
+        fileList.add(file);
+      }
+    }
+    fileList = fileList.isEmpty() ? Arrays.asList(files) : fileList;
+    log("Randomize");
+    for (File file : fileList)
+    {
+      log(file.getAbsolutePath());
+    }
+    return fileList.get(new Random().nextInt(fileList.size()));
   }
 
   private static File rename(File file)
