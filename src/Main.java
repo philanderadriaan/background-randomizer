@@ -67,7 +67,7 @@ public class Main
       {
         Long.parseLong(fileName);
       }
-      catch (NumberFormatException e)
+      catch (NumberFormatException exception)
       {
         fileList.add(file);
       }
