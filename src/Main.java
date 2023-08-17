@@ -26,6 +26,13 @@ public class Main
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       PROPERTIES.load(new FileInputStream("background-randomizer.properties"));
 
+      String separator = "";
+      for (int i = 0; i < Math.pow(2, 7); i++)
+      {
+        separator += '-';
+      }
+      System.out.println(separator);
+
       File destinationDirectory = getDirectory("destination.directory");
       for (File destinationFile : destinationDirectory.listFiles())
       {
@@ -34,7 +41,7 @@ public class Main
       }
 
       File[] sourceSubDirectories = getDirectory("source.directory").listFiles();
-      List<File> sourceFileList = Arrays.asList(rename(random(sourceSubDirectories)).listFiles());
+      List<File> sourceFileList = Arrays.asList(rename(randomize(sourceSubDirectories)).listFiles());
       Collections.shuffle(sourceFileList);
 
       for (File sourceFile : sourceFileList)
@@ -43,7 +50,7 @@ public class Main
         {
           sourceFile = rename(sourceFile);
           File[] sourceFiles = sourceFile.listFiles();
-          sourceFile = random(sourceFiles);
+          sourceFile = randomize(sourceFiles);
         }
         renameCopy(sourceFile, destinationDirectory);
         Thread.sleep(1);
@@ -56,7 +63,7 @@ public class Main
     }
   }
 
-  private static File random(File[] files)
+  private static File randomize(File[] files)
   {
     List<File> fileList = new ArrayList<File>();
     for (File file : files)
@@ -66,6 +73,10 @@ public class Main
       try
       {
         Long.parseLong(fileName);
+        if (fileName.length() != String.valueOf(System.currentTimeMillis()).length())
+        {
+          fileList.add(file);
+        }
       }
       catch (NumberFormatException exception)
       {
