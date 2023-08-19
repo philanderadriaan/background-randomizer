@@ -33,14 +33,14 @@ public class Main
       }
       System.out.println(separator);
 
-      File destinationDirectory = getDirectory("destination.directory");
+      File destinationDirectory = new File(PROPERTIES.getProperty("destination.directory"));
       for (File destinationFile : destinationDirectory.listFiles())
       {
         log("Delete", destinationFile.getAbsolutePath());
         destinationFile.delete();
       }
 
-      File[] sourceSubDirectories = getDirectory("source.directory").listFiles();
+      File[] sourceSubDirectories = getSubDirectories("source.directory");
       List<File> sourceFileList = Arrays.asList(rename(randomize(sourceSubDirectories)).listFiles());
       Collections.shuffle(sourceFileList);
 
@@ -109,10 +109,15 @@ public class Main
     Files.copy(sourceFile.toPath(), Paths.get(destinationFileName));
   }
 
-  private static File getDirectory(String key)
+  private static File[] getSubDirectories(String key)
   {
     String[] directoryNames = PROPERTIES.getProperty(key).split(",");
-    return new File(directoryNames[new Random().nextInt(directoryNames.length)]);
+    List<File> subDirectoryList = new ArrayList<File>();
+    for (String directoryName : directoryNames)
+    {
+      subDirectoryList.addAll(new ArrayList<File>(Arrays.asList(new File(directoryName).listFiles())));
+    }
+    return subDirectoryList.toArray(new File[subDirectoryList.size()]);
   }
 
   private static void log(String... logs)
