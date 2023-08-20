@@ -26,13 +26,6 @@ public class Main
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       PROPERTIES.load(new FileInputStream("background-randomizer.properties"));
 
-      String separator = "";
-      for (int i = 0; i < Math.pow(2, 7); i++)
-      {
-        separator += '-';
-      }
-      System.out.println(separator);
-
       File destinationDirectory = new File(PROPERTIES.getProperty("destination.directory"));
       for (File destinationFile : destinationDirectory.listFiles())
       {
